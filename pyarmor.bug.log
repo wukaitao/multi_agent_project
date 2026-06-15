@@ -1,0 +1,12 @@
+[BUG]: no found input "hermes"
+
+## Command Line
+C:\Users\wukai\AppData\Local\Programs\Python\Python313\Scripts\pyarmor gen -r -O dist agents core hermes database tools chroma_db data memory temp app.py config.py main_graph.py --exclude .venv --exclude .venv_win --exclude venv --exclude __pycache__ --exclude dist
+
+## Environments
+Python 3.13.12
+Pyarmor 9.2.5 (trial), 000000, non-profits
+Platform windows.x86_64
+Native windows.amd64
+Home C:\Users\wukai\.pyarmor
+

@@ -1,0 +1,65 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "1-Streamlit-Web前端 8501",
+            "type": "python",
+            "request": "launch",
+            "module": "streamlit",
+            "args": [
+                "run",
+                "channels/web/app.py",
+                "--server.port",
+                "8501",
+                "--server.address",
+                "0.0.0.0"
+            ],
+            "cwd": "${workspaceFolder}",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            },
+            "console": "integratedTerminal",
+            "justMyCode": false
+        },
+        {
+            "name": "2-FastAPI-Gateway网关服务 8001",
+            "type": "python",
+            "request": "launch",
+            "module": "uvicorn",
+            "args": [
+                "channels.web.app:gateway_app",
+                "--host",
+                "0.0.0.0",
+                "--port",
+                "8001",
+                "--reload"
+            ],
+            "cwd": "${workspaceFolder}",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            },
+            "console": "integratedTerminal",
+            "justMyCode": false
+        },
+        {
+            "name": "3-FastAPI-Business业务接口 8000",
+            "type": "python",
+            "request": "launch",
+            "module": "uvicorn",
+            "args": [
+                "channels.web.app:fastapi_app",
+                "--host",
+                "0.0.0.0",
+                "--port",
+                "8000",
+                "--reload"
+            ],
+            "cwd": "${workspaceFolder}",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            },
+            "console": "integratedTerminal",
+            "justMyCode": false
+        }
+    ]
+}

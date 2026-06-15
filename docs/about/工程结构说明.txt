@@ -1,0 +1,211 @@
+my_agent_project/                      # 项目根目录
+├── README.md                          # 项目说明
+├── pyproject.toml                     # 项目配置与依赖管理
+├── .env.example                       # 环境变量模板
+├── docker-compose.yml                 # 容器编排
+├── Makefile                           # 常用命令封装
+│
+├── config/                            # 配置管理
+│   ├── __init__.py
+│   ├── settings.py                    # 全局配置（模型参数、数据库连接池）
+│   ├── logging.yaml                   # 日志配置
+│   ├── agent_registry.yaml            # 领域Agent注册表（医疗/金融/娱乐/编程/办公）
+│   ├── skills_registry.yaml           # Skills注册表
+│   └── channels.yaml                  # 入口渠道配置（微信/Hermes/Web等）
+│
+├── core/                              # 核心抽象层
+│   ├── __init__.py
+│   ├── agent_base.py                  # BaseAgent抽象类（模板方法模式）
+│   ├── graph_base.py                  # LangGraph工作流基类
+│   ├── state_base.py                  # 状态机基类（继承TypedDict）
+│   └── exceptions.py                  # 自定义异常体系
+│
+├── llm/                               # LLM客户端层（统一接口，支持多模型切换）
+│   ├── __init__.py
+│   ├── base.py                        # BaseLLM抽象接口
+│   ├── factory.py                     # LLM工厂（支持OpenAI/DeepSeek/千问/本地Ollama）
+│   ├── providers/
+│   │   ├── openai_client.py
+│   │   ├── deepseek_client.py
+│   │   ├── qwen_client.py
+│   │   └── ollama_client.py
+│   └── embeddings.py                  # 嵌入模型客户端
+│
+├── agents/                            # 领域Agent层
+│   ├── __init__.py
+│   ├── supervisor/                    # 监督者Agent（主路由）
+│   │   ├── __init__.py
+│   │   ├── supervisor_agent.py        # 主管Agent逻辑
+│   │   ├── router.py                  # 基于LLM的智能路由
+│   │   └── workflows.yaml             # 监督者工作流配置
+│   │
+│   ├── domain/                        # 垂直领域专家Agent
+│   │   ├── medical/                   # 医疗领域
+│   │   │   ├── __init__.py
+│   │   │   ├── agent.py               # MedicalAgent主类
+│   │   │   ├── graph.py               # LangGraph工作流定义
+│   │   │   ├── prompts.py             # 领域专属提示词
+│   │   │   └── knowledge/             # 领域知识库（ChromaDB）
+│   │   ├── finance/                   # 金融领域
+│   │   ├── entertainment/             # 娱乐领域
+│   │   ├── coding/                    # 编程领域
+│   │   └── office/                    # 办公领域
+│   │
+│   └── specialized/                   # 专业能力子Agent
+│       ├── rag_agent.py               # RAG检索增强Agent
+│       ├── chat_agent.py              # 通用对话Agent
+│       ├── approval_agent.py          # 审批流程Agent（人机协作节点）
+│       ├── multimodal_agent.py        # 多模态Agent（图像/语音/视频）
+│       └── code_agent.py              # 代码执行Agent
+│
+├── graphs/                            # LangGraph工作流定义
+│   ├── __init__.py
+│   ├── main_graph.py                  # 主监督者图
+│   ├── subgraphs/                     # 可复用的子图（类似Lego积木）
+│   │   ├── rag_subgraph.py
+│   │   ├── approval_subgraph.py
+│   │   └── human_review.py            # 人机协作子图
+│   ├── state_schema.py                # 全局状态Schema定义
+│   └── visualizations/                # 图可视化输出
+│
+├── tools/                             # 工具层（Skills + 基础工具）
+│   ├── __init__.py
+│   ├── registry.py                    # 工具注册中心（单例，AST自动发现）
+│   ├── base_tool.py                   # BaseTool抽象类
+│   ├── builtin/                       # 内置工具
+│   │   ├── web_search.py
+│   │   ├── file_io.py
+│   │   ├── calculator.py
+│   │   ├── database_query.py
+│   │   └── ...
+│   └── skills/                        # 可暴露给Hermes Agent调用的Skills
+│       ├── __init__.py
+│       ├── medical_skills.py
+│       ├── finance_skills.py
+│       ├── coding_skills.py
+│       └── registry_loader.py         # Skills动态加载器
+│
+├── memory/                            # 记忆层
+│   ├── __init__.py
+│   ├── short_term/                    # 短期记忆（Redis/Session）
+│   │   └── redis_store.py
+│   ├── long_term/                     # 长期记忆（Vector DB + Graph DB）
+│   │   ├── vector_store.py            # ChromaDB语义检索
+│   │   ├── graph_store.py             # Neo4j关系存储
+│   │   ├── hybrid_retriever.py        # 向量+图混合检索
+│   │   └── schemas/
+│   │       ├── chroma_models.py
+│   │       └── neo4j_models.py
+│   └── checkpointer/                  # LangGraph状态持久化（SQLite）
+│       └── sqlite_checkpointer.py
+│
+├── data/                              # 数据层
+│   ├── sqlite/                        # SQLite数据库文件
+│   │   ├── app.db                     # 主业务数据库
+│   │   ├── tasks.db                   # 任务状态数据库
+│   │   └── migrations/                # Alembic迁移脚本
+│   ├── neo4j/                         # Neo4j图数据库（需独立部署）
+│   │   └── cypher/                    # Cypher查询脚本
+│   └── chroma/                        # ChromaDB持久化目录
+│
+├── apis/                              # API网关与业务API
+│   ├── __init__.py
+│   ├── gateway/                       # API网关
+│   │   ├── __init__.py
+│   │   ├── app.py                     # FastAPI主应用
+│   │   ├── middleware/
+│   │   │   ├── auth.py                # 认证中间件
+│   │   │   ├── logging.py
+│   │   │   └── rate_limit.py
+│   │   └── routes/
+│   │       ├── v1/
+│   │       │   ├── agent.py           # Agent调用接口
+│   │       │   ├── skills.py          # Skills暴露接口
+│   │       │   └── health.py
+│   │       └── webhooks.py            # Webhook回调
+│   └── business/                      # 业务API（内部服务）
+│       ├── user_service.py
+│       ├── task_service.py
+│       └── approval_service.py
+│
+├── channels/                          # 入口渠道层
+│   ├── __init__.py
+│   ├── base.py                        # 渠道基类
+│   ├── wechat/                        # 微信入口（ClawBot集成）
+│   │   ├── __init__.py
+│   │   ├── bot.py                     # 微信机器人核心（wxauto/WXPY）
+│   │   ├── handlers.py                # 消息处理器
+│   │   └── oauth.py                   # OAuth2.0授权流程
+│   ├── hermes/                        # Hermes Agent入口（Skills暴露）
+│   │   ├── __init__.py
+│   │   ├── server.py                  # Hermes兼容服务
+│   │   └── skill_exporter.py          # Skills导出为Hermes格式
+│   ├── web/                           # Web UI入口（Streamlit）
+│   │   ├── app.py                     # Streamlit主程序
+│   │   ├── pages/
+│   │   │   ├── chat.py
+│   │   │   ├── monitoring.py
+│   │   │   └── admin.py
+│   │   └── components/
+│   └── cli/                           # 命令行入口
+│       └── main.py                    # CLI交互
+│
+├── agents_test/                            # （续）测试与部署Agent
+│   ├── __init__.py
+│   ├── ...                            # 前面已列出的Agent目录
+│   └── ops/                           # 运维型Agent
+│       ├── __init__.py
+│       ├── test_agent.py              # 自动化测试验证Agent
+│       ├── deploy_agent.py            # 自动化部署Agent
+│       └── monitor_agent.py           # 运行时监控Agent
+│
+├── evaluation/                        # Agent评估与测试
+│   ├── __init__.py
+│   ├── evals/                         # 评估任务集
+│   │   ├── task_medical.json
+│   │   ├── task_finance.jsoncls
+│   │   └── ...
+│   ├── runners/                       # 评估执行器
+│   │   ├── unit_runner.py             # 确定性单元测试
+│   │   ├── batch_runner.py            # 批量评估
+│   │   └── multiround_runner.py       # 多轮对话评估
+│   ├── graders/                       # 评分器（Code/Model/Human）
+│   │   ├── code_grader.py
+│   │   ├── llm_grader.py
+│   │   └── metrics.py
+│   └── dashboard/                     # 测试结果仪表盘（React）
+│
+├── workflows/                         # Workflow刚性编排（阶段2场景）
+│   ├── __init__.py
+│   ├── dag/                           # DAG定义（YAML/JSON）
+│   │   ├── finance_risk.yaml
+│   │   └── order_processing.yaml
+│   └── engine.py                      # DAG执行引擎
+│
+├── scripts/                           # 运维与工具脚本
+│   ├── init_db.py
+│   ├── migrate.py
+│   ├── backup.py
+│   └── deploy.py
+│
+├── tests/                             # 单元测试与集成测试
+│   ├── __init__.py
+│   ├── conftest.py
+│   ├── unit/
+│   │   ├── test_agents/
+│   │   ├── test_tools/
+│   │   └── test_llm/
+│   └── integration/
+│       ├── test_api/
+│       └── test_channels/
+│
+├── docs/                              # 技术文档
+│   ├── architecture.md
+│   ├── api.md
+│   ├── deployment.md
+│   └── skills_guide.md
+│
+└── .github/                           # CI/CD配置
+    └── workflows/
+        ├── ci.yml                     # 持续集成（单元测试+Evals）
+        └── deploy.yml                 # 持续部署
