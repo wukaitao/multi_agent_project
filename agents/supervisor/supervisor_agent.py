@@ -35,10 +35,10 @@ def semantic_router(state) -> str:
     )
     prompt = f"""分析以下用户问题, 判断应该路由到哪个Agent.
     可选Agent:
-    - rag: 知识检索、文档回答、信息查询
+    - rag: 知识检索、文档回答、信息查询、人物百科
     - multimodal: 图片生成、图片理解
     - tool: 天气查询、代码生成、足球信息
-    - approval: 审批流程、删除知识图谱
+    - approval: 审批流程(包括预约、请假、报销、项目立项等)、数据库(包括数据库、知识图谱)操作
     - chat: 普通对话、闲聊
 
     用户问题: {query}

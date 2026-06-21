@@ -1,0 +1,34 @@
+{
+    "name": "医疗领域评估集",
+    "version": "1.0",
+    "description": "医疗领域的Agent评估任务",
+    "tasks": [
+        {
+            "id": "med_001",
+            "task_name": "症状分析",
+            "query": "我最近三天持续头痛，伴有轻微发热，应该怎么办？",
+            "expected": "建议休息，多喝水，测量体温。如症状持续，建议就医。",
+            "domain": "medical",
+            "context": {
+                "user_age": 30,
+                "user_location": "北京"
+            },
+            "metadata": {
+                "difficulty": "easy",
+                "category": "symptom_analysis"
+            }
+        },
+        {
+            "id": "med_002",
+            "task_name": "药品查询",
+            "query": "布洛芬和对乙酰氨基酚有什么区别？",
+            "expected": "两者都是解热镇痛药，但作用机制和适应症有所不同。",
+            "domain": "medical",
+            "context": {},
+            "metadata": {
+                "difficulty": "medium",
+                "category": "drug_info"
+            }
+        }
+    ]
+}

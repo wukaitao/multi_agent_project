@@ -1,0 +1,166 @@
+# Agent 注册配置
+agents:
+  # 监督者 Agent (主路由)
+  supervisor:
+    name: "监督者 Agent"
+    description: "负责任务路由和协调的中央控制器"
+    enabled: true
+    type: "supervisor"
+    max_iterations: 10
+    timeout: 300
+    strategies:
+      - "intent_classification"
+      - "task_decomposition"
+      - "resource_allocation"
+
+  # 领域专家 Agent
+  domain:
+    medical:
+      name: "医疗领域专家"
+      description: "提供医疗咨询、症状分析、药品查询等服务"
+      enabled: true
+      type: "domain_specialist"
+      knowledge_base: "medical_kb"
+      tools: ["drug_query", "symptom_analysis", "hospital_recommendation"]
+      routes:
+        - keywords: ["症状", "疾病", "药品", "医院", "医生", "治疗", "健康"]
+        - confidence_threshold: 0.7
+      prompts:
+        system: "prompts/medical/system_prompt.txt"
+        few_shot: "prompts/medical/few_shot_examples.json"
+      safety:
+        require_disclaimer: true
+        emergency_datection: true
+
+    finance:
+      name: "金融领域专家"
+      description: "提供投资分析、财务咨询、风险评估等服务"
+      enabled: true
+      type: "domain_specialist"
+      knowledge_base: "finance_kb"
+      tools: ["stock_query", "financial_analysis", "risk_assessment"]
+      routes:
+        - keywords: ["股票", "基金", "投资", "理财", "风险", "收益", "财务"]
+        - confidence_threshold: 0.7
+      safety:
+        require_disclaimer: true
+        risk_warning: true
+
+    entertainment:
+      name: "娱乐领域专家"
+      description: "提供电影推荐、游戏攻略、娱乐资讯等服务"
+      enabled: true
+      type: "domain_specialist"
+      tools: ["movie_recommend", "game_info", "entertainment_news"]
+      routes:
+        - keywords: ["电影", "电视剧", "游戏", "音乐", "明星", "娱乐"]
+        - confidence_threshold: 0.6
+
+    coding:
+      name: "编程领域专家"
+      description: "提供代码编写、调试、技术咨询等服务"
+      enabled: true
+      type: "domain_specialist"
+      tools: ["code_generate", "debug", "code_review", "api_docs"]
+      routes:
+        - keywords: ["代码", "编程", "函数", "类", "API", "错误", "调试", "Python", "Java"]
+        - confidence_threshold: 0.6
+      code_execution:
+        enabled: true
+        sandbox: true
+        max_timeout: 60
+
+    office:
+      name: "办公领域专家"
+      description: "提供文档处理、会议安排、日程管理等办公服务"
+      enabled: true
+      type: "domain_specialist"
+      tools: ["document_process", "schedule", "email", "meeting"]
+      routes:
+        - keywords: ["会议", "日程", "邮件", "文档", "报告", "PPT", "Excel", "Word"]
+        - confidence_threshold: 0.6
+
+  # 专业能力子 Agent
+  specialized:
+    rag:
+      name: "RAG 检索增强 Agent"
+      description: "基于知识库的检索增强生成服务"
+      enabled: true
+      type: "specialized"
+      knowledge_bases:
+        - "general_kb"
+        - "domain_kb"
+      retrieval:
+        top_k: 5
+        similarity_threshold: 0.7
+        hybrid_search: true
+
+    chat:
+      name: "通用对话 Agent"
+      description: "通用对话和问答服务"
+      enabled: true
+      type: "specialized"
+      model: "qwen2.5:7b"
+      context_window: 20
+
+    approval:
+      name: "审批流程 Agent"
+      description: "处理各类审批请求"
+      enabled: true
+      type: "specialized"
+      approval_types:
+        - "kg_node_delete"
+        - "kg_relation_delete"
+        - "leave"
+        - "project"
+        - "reimbursement"
+        - "purchase"
+      timeout_handling:
+        default_hours: 48
+        escalation_enabled: true
+
+    multimodal:
+      name: "多模态 Agent"
+      description: "处理图像、音频、视频等多模态数据"
+      enabled: true
+      type: "specialized"
+      capabilities:
+        - "image_recognition"
+        - "ocr"
+        - "audio_transcription"
+        - "video_analysis"
+
+    code:
+      name: "代码执行 Agent"
+      description: "安全执行代码并返回结果"
+      enabled: true
+      type: "specialized"
+      execution:
+        sandbox: true
+        allowed_languages: ["python", "javascript", "bash"]
+        max_timeout: 30
+        memory_limit: "256MB"
+
+# 路由配置
+routing:
+  default_agent: "chat"
+  fallback_agent: "chat"
+  max_routing_attempts: 3
+
+  # 路由策略
+  strategies:
+    - type: "keyword"
+      priority: 1
+    - type: "embedding"
+      priority: 2
+      threshold: 0.75
+    - type: "llm_classification"
+      priority: 3
+      confidence_threshold: 0.8
+
+# 负载均衡配置
+load_balancing:
+  enabled: true
+  stratety: "round_robin"  # round_robin, least_connections, random
+  max_connections: 10
+  timeout: 30

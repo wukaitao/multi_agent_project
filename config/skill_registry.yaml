@@ -1,0 +1,314 @@
+# Skills 注册配置
+skills:
+  # 医疗领域 Skills
+  medical:
+    drug_query:
+      name: "drug_query"
+      decription: "查询药品信息, 包括用法、用量、副作用等"
+      version: "1.0.0"
+      enabled: true
+      parameters:
+        - name: "drug_name"
+          type: "string"
+          required: true
+          description: "药品名称"
+        - name: "detail_level"
+          type: "string"
+          enum: ["basic", "detailed", "full"]
+          default: "basic"
+          description: "查询详细程度"
+      returns:
+        type: "object"
+        properties:
+          name: "string"
+          category: "string"
+          usage: "string"
+          side_effects: "array"
+          interactions: "array"
+      rate_limit: 100  # 每分钟请求数
+      timeout: 10
+
+    symptom_analysis:
+      name: "symptom_analysis"
+      description: "分析症状并提供初步建议"
+      version: "1.0.0"
+      enabled: true
+      parameters:
+        - name: "symptoms"
+          type: "array"
+          required: true
+          description: "症状列表"
+        - name: "duration"
+          type: "string"
+          description: "症状持续时间"
+        - name: "severity"
+          type: "integer"
+          minimum: 1
+          maximum: 10
+          description: "严重程度(1-10)"
+      returns:
+        type: "object"
+        properties:
+          possible_conditions: "array"
+          urgency_level: "string"
+          recommendations: "array"
+          disclaimer: "string"
+      rate_limit: 50
+      timeout: 15
+    
+    hospital_recommendation:
+      name: "hospital_recommendation"
+      description: "根据未知和需求推荐医院"
+      version: "1.0.0"
+      enabled: true
+      parameters:
+        - name: "location"
+          type: "string"
+          required: true
+          description: "位置信息"
+        - name: "department"
+          type: "string"
+          description: "科室名称"
+        - name: "emergency"
+          type: "boolean"
+          default: false
+          description: "是否急诊"
+      returns:
+        type: "object"
+        properties:
+          hospitals: "array"
+          distances: "array"
+          ratings: "array"
+      rate_limit: 50
+      timeout: 20
+
+  # 金融领域 Skills
+  finance:
+    stock_query:
+      name: "stock_query"
+      description: "查询股票实时行情和历史数据"
+      version: "1.0.0"
+      enabled: true
+      parameters:
+        - name: "symbol"
+          type: "string"
+          required: true
+          description: "股票代码"
+        - name: "period"
+          type: "string"
+          enum: ["1d", "5d", "1m", "3m", "6m", "1y"]
+          default: "1d"
+          description: "时间周期"
+      returns:
+        type: "object"
+        properties:
+          current_price: "number"
+          change_percent: "number"
+          high: "number"
+          low: "number"
+          volume: "number"
+          historical_data: "array"
+      rate_limit: 60
+      timeout: 5
+
+    financial_analysis:
+      name: "financial_analysis"
+      description: "财务指标分析和投资建议"
+      version: "1.0.0"
+      enabled: true
+      parameters:
+        - name: "company"
+          type: "string"
+          required: true
+          description: "公司名称或代码"
+        - name: "metrics"
+          type: "array"
+          items:
+            type: "string"
+            enum: ["pe", "pb", "roe", "growth", "debt_ratio"]
+          description: "要分析的指标"
+      returns:
+        type: "object"
+        properties:
+          metrics: "object"
+          analysis: "string"
+          risk_level: "string"
+      rate_limit: 30
+      timeout: 30
+
+    risk_assessment:
+      name: "risk_assessment"
+      description: "投资风险评估"
+      version: "1.0.0"
+      enabled: true
+      parameters:
+        - name: "portfolio"
+          type: "array"
+          required: true
+          description: "投资组合"
+        - name: "time_horizon"
+          type: "string"
+          enum: ["short", "medium", "long"]
+          default: "medium"
+      returns:
+        type: "object"
+        properities:
+          risk_score: "number"
+          volatility: "number"
+          diversification: "string"
+          recommendations: "array"
+      rate_limit: 20
+      timeout: 30
+
+  # 编程领域 Skills
+  coding:
+    code_generate:
+      name: "code_generate"
+      description: "根据需求生成代码"
+      version: "1.0.0"
+      enabled: true
+      parameters:
+        - name: "description"
+          type: "string"
+          required: true
+          description: "代码功能描述"
+        - name: "language"
+          type: "string"
+          enum: ["python", "javascript", "java", "go", "rust"]
+          default: "python"
+          description: "编程语言"
+        - name: "framework"
+          type: "string"
+          description: "框架名称 (如 FastAPI, React)"
+      returns:
+        type: "object"
+        properties:
+          code: "string"
+          explanation: "string"
+          dependencies: "array"
+          tests: "string"
+      rate_limit: 30
+      timeout: 60
+
+    debug:
+      name: "debug"
+      description: "调试代码并修复错误"
+      version: "1.0.0"
+      enabled: true
+      parameters:
+        - name: "code"
+          type: "string"
+          required: true
+          description: "要调试的代码"
+        - name: "error_message"
+          type: "string"
+          description: "错误信息(如果有)"
+        - name: "language"
+          type: "string"
+          default: "python"
+      returns:
+        type: "object"
+        properties:
+          fixed_code: "string"
+          explanation: "string"
+          root_cause: "string"
+      rate_limit: 20
+      timeout: 60
+    
+    code_review:
+      name: "code_review"
+      description: "代码审查并提供改进建议"
+      version: "1.0.0"
+      enabled: true
+      parameters:
+        - name: "code"
+          type: "string"
+          required: true
+          description: "要审查的代码"
+        - name: "language"
+          type: "string"
+          default: "python"
+        - name: "focus_areas"
+          type: "array"
+          items:
+            type: "string"
+            enum: ["security", "performance", "style", "architecture"]
+          description: "关注领域"
+      returns:
+        type: "object"
+        properties:
+          issues: "array"
+          suggestions: "array"
+          rating: "number"
+          security_concerns: "array"
+      rate_limit: 20
+      timeout: 60
+
+  # 办公领域 Skills
+  office:
+    document_process:
+      name: "document_process"
+      description: "处理文档(创建、编辑、格式化)"
+      version: "1.0.0"
+      enabled: true
+      parameters:
+        - name: "action"
+          type: "string"
+          enum: ["create", "summarize", "translate", "format"]
+          required: true
+        - name: "content"
+          type: "string"
+          required: true
+          description: "文档内容"
+        - name: "format"
+          type: "string"
+          enum: ["docx", "pdf", "txt", "md"]
+          default: "md"
+      returns:
+        type: "object"
+        properties:
+          result: "string"
+          file_url: "string"
+          word_count: "number"
+      rate_limit: 40
+      timeout: 30
+
+    schedule:
+      name: "schedule"
+      description: "安排会议、创建日程提醒"
+      version: "1.0.0"
+      enabled: true
+      parameters:
+        - name: "action"
+          type: "string"
+          enum: ["create_meeting", "set_reminder", "check_availability"]
+          required: true
+        - name: "details"
+          type: "object"
+          required: true
+          description: "日程详情"
+      returns:
+        type: "object"
+        properies:
+          schedule_id: "string"
+          confirmation: "string"
+          conflicts: "array"
+      rate_limit: 50
+      timeout: 15
+
+# 全局配置
+global:
+  rate_limit_enabled: true
+  default_rate_limit: 100
+  default_timeout: 30
+  retry_count: 3
+  retry_delay: 1  # 秒
+
+# 暴露给 Hermes 的配置
+hermes_export:
+  enabled: true
+  endpoint: "/api/v1/skills/hermes"
+  format: "openai"  # openai, graphql, grpc
+  authentication:
+    type: "oauth2"
+    required: true

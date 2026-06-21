@@ -1,0 +1,131 @@
+# 监控者工作流配置
+
+workflow:
+  # 默认工作流
+  default:
+    max_iterations: 10
+    timeout: 300
+    fallback_agent: "chat"
+    retry_count: 3
+    retry_delay: 1  # 秒
+
+  # 复杂任务分解工作流
+  complex_task:
+    enabled: true
+    max_iterations: 15
+    decomposition_strategy: "llm"
+    parallel_execution: true
+    max_parallel: 5
+
+  # 审批工作流
+  approval_flow:
+    enabled: true
+    timeout: 86400  # 24小时
+    escalation_after: 43200  # 12小时
+
+    types:
+      kg_delete:
+        timeout: 86400  # 24小时
+        escalation: true
+        auto_approve_threshold: 0.8
+
+      leave:
+        timeout: 172800  # 48小时
+        escalation_after: 86400  #24小时
+        
+      reimbursement:
+        timeout: 172800  # 48小时
+        escalation_after: 86400  # 24小时
+        amount_threshold: 5000 # 超过需要多级审批
+
+  # 多 Agent 协作工作流
+  multi_agent:
+    enabled: true
+    coordination_strategy: "supervisor"
+    synchronization: "synchronous"
+    conflict_resolution: "voting"
+
+  # 人机协作工作流
+  human_collaboration:
+    enabled: true
+    interrupt_points:
+      - before_tool_execution
+      - before_code_execution
+      - before_data_modification
+
+    approval_required:
+      - tool: "kg_deletion"
+        level: "admin"
+      - tool: "data_export"
+        level: "manager"
+      - tool: "system_config"
+        level: "admin"
+
+# 状态流转配置
+state_transitions:
+  pending:
+    - to: running
+      conditions:
+        - "validation_passwed"
+        - "approval_not_required"
+    - to: requires_approval
+      conditions:
+        - "approval_required"
+
+  running:
+    - to: completed
+      conditions:
+        - "all subtasks completed"
+    - to: failed
+      conditions:
+        - "error_occurred"
+    - to: interrupted
+      conditions:
+        - "user_interrupted"
+
+  requires_approval:
+    - to: running
+      conditions:
+        - "approval_granted"
+    - to: failed
+      conditions:
+        - "approval_denied"
+        - "approvavl_expired"
+
+  completed:
+    - to:  # 终态, 不再转移
+
+  failed:
+    - to: running
+      conditions:
+        - "retry_enabled"
+        - "retry_count < max_retries"
+
+# 错误处理策略
+error_handling:
+  strategies:
+    - type: "retry"
+      max_attempts: 3
+      backoff: "exponential"
+      base_delay: 1
+      max_delay: 60
+
+    - type: "fallback"
+      fallback_agent: "chat"
+
+    - type: "human_escalation"
+      notify_users:
+        - "admin"
+        - "oncall"
+
+# 性能配置
+performance:
+  caching:
+    enabled: true
+    ttl: 3600  # 1小时
+    max_size: 1000
+
+  rate_limiting:
+    enabled: true
+    requests_per_minute: 100
+    burst_size: 20

@@ -1,0 +1,86 @@
+version: 1
+disable_existing_loggers: false
+
+formatters:
+  detailed:
+    format: '[%(asctime)s] [%(levelname)s] [%(name)s:%(lineno)d] %(message)s'
+    datefmt: '%Y-%m-%d %H:%M:%S'
+
+  json:
+    format: '{"time": "%(asctime)s", "level": "%(levelname)s", "logger": "%(name)s", "message": "%(message)s"}'
+    datefmt: '%Y-%m-%dT%H:%M:%S%z'
+
+handlers:
+  console:
+    class: logging.StreamHandler
+    level: INFO
+    formatter: detailed
+    stream: ext://sys.stdout
+
+  file:
+    class: logging.handlers.RotatingFileHandlder
+    level: DEBUG
+    formatter: detailed
+    filename: logs/app.log
+    maxBytes: 10485760  # 10MB
+    backupCount: 10
+    encoding: utf-8
+  
+  error_file:
+    class: logging.handlers.RotatingFileHandler
+    level: ERROR
+    formatter: detailed
+    filename: logs/error.log
+    maxBytes: 10485760
+    backupCount: 5
+    encoding: utf-8
+
+  agent_file:
+    class: logging.handlers.RotatingFileHandler
+    level: INFO
+    formatter: detailed
+    filename: logs/agent.log
+    maxBytes: 52428800
+    backupCount: 20
+    encoding: utf-8
+
+  json_file:
+    class: logging.handlers.RotatingFileHandler
+    level: INFO
+    filename: logs/structured.json.log
+    maxBytes: 10485760
+    backupCount: 10
+    encoding: utf-8
+
+loggers:
+  # 应用日志
+  my_agent_project:
+    level: DEBUG
+    handlers: [console, file, json_file]
+    propagate: false
+
+  # Agent 日志
+  agent:
+    level: INFO
+    handlers: [agent_file, console]
+    propagate: false
+
+  # 第三方库日志
+  langgraph:
+    level: WARNING
+    handlers: [console]
+    propagate: false
+
+  llama_index:
+    level: WARNING
+    handlers: [console]
+    propagate: false
+
+  httpx:
+    level: WARNING
+    handlers: [console]
+    propagate: false
+
+root:
+  level: INFO
+  handlers: [console, file, error_file]

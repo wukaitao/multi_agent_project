@@ -1,0 +1,197 @@
+# 渠道接入配置
+channels:
+  # 微信渠道
+  wechat:
+    enabled: false  # 默认关闭, 需要配置
+    type: "wechat"
+    name: "微信机器人"
+    description: "通过微信客户端接入"
+
+    # 客户端配置
+    client:
+      platform: "windows"  # windows, mac
+      auto_login: true
+      login_timeout: 300
+      session_path: "data/wechat/session"
+
+    # 消息处理配置
+    message:
+      max_length: 1000
+      supported_types: ["text", "image", "file"]
+      auto_reply_timeout: 30
+      rate_limit: 20  # 每分钟消息数
+
+    # 功能配置
+    features:
+      keyword_trigger: true
+      group_chat: true
+      friend_chat: true
+      keyword_mapping:
+        - "/help": "显示帮助信息"
+        - "/agent": "调用 Agent"
+        - "/reset": "重置会话"
+
+    # 安全配置
+    security:
+      allowed_users: []  # 空列表表示全部允许
+      blocked_users: []
+      sensitive_words: ["密码", "银行卡", "身份证"]
+      content_filter: true
+
+  # Hermes 通道
+  hermes:
+    enabled: true
+    type: "hermes"
+    name: "Hermes Agent 接口"
+    description: "对外暴露 Skills 供 Hermes Agent 调用"
+
+    # 服务器配置
+    server:
+      host: "0.0.0.0"
+      port: 8080
+      workers: 4
+      timeout: 300
+
+    # API 配置
+    api:
+      prefix: "/hermes"
+      version: "v1"
+      format: "openai"
+      endpoints:
+        - path: "/skills"
+          method: "GET"
+          description: "获取所有可用的 Skills"
+        - path: "/skills/{skill_name}"
+          method: "POST"
+          description: "调用指定的 Skill"
+        - path: "/health"
+          method: "GET"
+          description: "健康检查"
+
+    # 认证配置
+    authentication:
+      type: "api_key"  # api_key, oauth2, jwt
+      header: "X-API-Key"
+      keys: []  # 从环境变量读取
+
+    # 限流配置
+    rate_limit:
+      enabled: true
+      per_minute: 100
+      burst: 20
+
+    # Web UI 渠道
+    web:
+      enabled: true
+      type: "web"
+      name: "Web 管理界面"
+      description: "Streamlit Web UI"
+
+      # Streamlit 配置
+      streamlit:
+        server:
+          host: "0.0.0.0"
+          port: 8501
+          headless: true
+          max_upload_size: 200  # MB
+        
+        theme:
+          primary_color: "#4CAF50"
+          background_color: "#FFFFFF"
+          secondary_background_color: "#F0F2F6"
+          text_color: "#262730"
+          font: "sans serif"
+
+      # 页面配置
+      pages:
+        chat:
+          enabled: true
+          name: "聊天界面"
+          path: "/chat"
+          description: "与 Agent 对话交互"
+
+        monitoring:
+          enabled: true
+          name: "监控面板"
+          path: "/monitoring"
+          description: "系统运行状态监控"
+          refresh_interval: 5  # 秒
+
+        admin:
+          enabled: true
+          name: "管理后台"
+          path: "/admin"
+          description: "系统管理"
+          require_auth: true
+
+      # 认证
+      authentication:
+        enabled: true
+        type: "basic"  # basic, oauth2
+        users:
+          - username: "admin"
+            password_hash: "hash_placeholder"  # 使用bcrypt
+
+    # CLI 渠道
+    cli:
+      enabled: true
+      type: "cli"
+      name: "命令行接口"
+      description: "命令行交互模式"
+
+      # 命令配置
+      commands:
+        - name: "chat"
+          description: "进入对话模式"
+          usage: "python cli.py chat"
+
+        - name: "eval"
+          description: "运行评估"
+          usage: "python cli.py eval --file eval.json"
+
+        - name: "admin"
+          description: "管理命令"
+          usage: "python cli.py admin --action list_agents"
+
+      # 交互配置
+      interactive:
+        prompt: "Agent> "
+        history_file: "~/.agent_history"
+        max_history: 1000
+        color: true
+
+    # 将来可扩展的渠道
+    # slack:
+    #   enabled: false
+    #   type: "slack"
+
+    # discord:
+    #   enabled: false
+    #   type: "discord"
+
+    # telegram:
+    #   enabled: false
+    #   type: "telegram"
+
+# 全局渠道配置
+global:
+  # 消息队列配置
+  message_queue:
+    enabled: true
+    type: "redis"  # redis, rabbitmq. kafka
+    url: "redis://localhost:6379/0"
+    queue_name: "agent_messages"
+    max_retries: 3
+    retry_delay: 5
+
+  # 日志配置
+  logging:
+    enabled: true
+    level: "INFO"
+    channel_logs: true
+
+  # 监控配置
+  monitoring:
+    enabled: true
+    metries: true
+    traces: true
