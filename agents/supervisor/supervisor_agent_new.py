@@ -12,7 +12,6 @@ from core.agent_base import BaseAgent
 from core.state_base import BaseState, should_continue
 from core.exceptions import GraphException
 from .router import DomainRouter
-# from graphs.main_graph_new import MainGraph
 import logging
 
 logger = logging.getLogger(__name__)
@@ -87,7 +86,7 @@ class SupervisorAgent(BaseAgent):
             "domain": domain,
             "metadata": context,
             "iteration": 0,
-            "max_iterations": self.workfolws.get("default", {}).get("main_iteratioons", 10)
+            "max_iterations": self.workfolws.get("default", {}).get("max_iterations", 10)
         }
 
         # TODO

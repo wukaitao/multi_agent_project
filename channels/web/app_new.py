@@ -102,10 +102,13 @@ def create_streamlit_app():
             "supervisor": "监督者 Agent",
             "chat": "对话 Agent",
             "rag": "RAG Agent",
+            "approval": "审批工作流 Agent",
+            "multimodal": "多模态 Agent",
             "medical": "医疗 Agent",
             "finance": "金融 Agent",
             "coding": "编程 Agent",
-            "office": "办公 Agent"
+            "office": "办公 Agent",
+            "entertainment": "娱乐 Agent"
         }
         selected_agent = st.selectbox(
             "选择 Agent",
@@ -128,18 +131,20 @@ def create_streamlit_app():
 
         # 高级配置
         st.markdown("---")
-        with st.exception("高级配置"):
+        with st.expander("高级配置"):
             max_iterations = st.slider("最大迭代次数", 1, 20, 10)
             temperature = st.slider("温度", 0.0, 1.0, 0.7, 0.1)
             enable_streaming = st.checkbox("启用流式输出", value=True)
 
-            if st.button("重置会话"):
-                st.session_state.messages = []
-                st.rerun()
-            
-            if st.button("清空缓存"):
-                st.cache_data.clear()
-                st.success("缓存已清空")
+            col1, col2 = st.columns(2)
+            with col1:
+                if st.button("重置会话"):
+                    st.session_state.messages = []
+                    st.rerun()
+            with col2:
+                if st.button("清空缓存"):
+                    st.cache_data.clear()
+                    st.success("缓存已清空")
 
         # 统计信息
         st.markdown("---")
@@ -242,27 +247,22 @@ def create_streamlit_app():
 
             # 当前状态
             with st.container():
-                st.markdown('<div class="sidebar-section>"', unsafe_allow_html=True)
                 st.markdown('**当前会话**')
                 st.caption(f"消息数: {len(st.session_state.messages)}")
                 st.caption(f"Agent: {agent_options.get(st.session_state.current_agent, '未知')}")
                 st.caption(f"领域: {domain}")
-                st.markdown('</div>', unsafe_allow_html=True)
 
             # 最近消息预览
             with st.container():
-                st.markdown('<div class="sidebar-section">', unsafe_allow_html=True)
                 st.markdown("**最新消息**")
                 if st.session_state.messages:
                     last_msg = st.session_state.messages[-1]
                     st.caption(f"{last_msg['role']}: {last_msg['content'][:100]}...")
                 else:
                     st.caption("暂无消息")
-                st.markdown('</div>', unsafe_allow_html=True)
 
             # 快速操作
             with st.container():
-                st.markdown('<div class="sidebar-section">', unsafe_allow_html=True)
                 st.markdown("**快速操作**")
 
                 quick_queries = [
@@ -278,11 +278,8 @@ def create_streamlit_app():
                         # 触发发送
                         st.rerun()
 
-                st.markdown('</div>', unsafe_allow_html=True)
-
             # 系统监控
             with st.container():
-                st.markdown('<div class="sidebar-section">', unsafe_allow_html=True)
                 st.markdown("**系统监控**")
 
                 # 模拟数据
@@ -291,11 +288,7 @@ def create_streamlit_app():
                 st.progress(0.30, text="GPU使用率: 30%")
 
                 st.caption(f"最后更新: {datetime.now().strftime('%H:%M:%S')}")
-                st.markdown('</div>', unsafe_allow_html=True)
-
-def main():
-    """主入口"""
-    create_streamlit_app()
 
 if __name__ == "__main__":
-    main()
+    """主入口"""
+    create_streamlit_app()
