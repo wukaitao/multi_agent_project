@@ -80,85 +80,85 @@ channels:
       per_minute: 100
       burst: 20
 
-    # Web UI 渠道
-    web:
-      enabled: true
-      type: "web"
-      name: "Web 管理界面"
-      description: "Streamlit Web UI"
+  # Web UI 渠道
+  web:
+    enabled: true
+    type: "web"
+    name: "Web 管理界面"
+    description: "Streamlit Web UI"
 
-      # Streamlit 配置
-      streamlit:
-        server:
-          host: "0.0.0.0"
-          port: 8501
-          headless: true
-          max_upload_size: 200  # MB
-        
-        theme:
-          primary_color: "#4CAF50"
-          background_color: "#FFFFFF"
-          secondary_background_color: "#F0F2F6"
-          text_color: "#262730"
-          font: "sans serif"
+    # Streamlit 配置
+    streamlit:
+      server:
+        host: "0.0.0.0"
+        port: 8501
+        headless: true
+        max_upload_size: 200  # MB
+      
+      theme:
+        primary_color: "#4CAF50"
+        background_color: "#FFFFFF"
+        secondary_background_color: "#F0F2F6"
+        text_color: "#262730"
+        font: "sans serif"
 
-      # 页面配置
-      pages:
-        chat:
-          enabled: true
-          name: "聊天界面"
-          path: "/chat"
-          description: "与 Agent 对话交互"
-
-        monitoring:
-          enabled: true
-          name: "监控面板"
-          path: "/monitoring"
-          description: "系统运行状态监控"
-          refresh_interval: 5  # 秒
-
-        admin:
-          enabled: true
-          name: "管理后台"
-          path: "/admin"
-          description: "系统管理"
-          require_auth: true
-
-      # 认证
-      authentication:
+    # 页面配置
+    pages:
+      chat:
         enabled: true
-        type: "basic"  # basic, oauth2
-        users:
-          - username: "admin"
-            password_hash: "hash_placeholder"  # 使用bcrypt
+        name: "聊天界面"
+        path: "/chat"
+        description: "与 Agent 对话交互"
 
-    # CLI 渠道
-    cli:
+      monitoring:
+        enabled: true
+        name: "监控面板"
+        path: "/monitoring"
+        description: "系统运行状态监控"
+        refresh_interval: 5  # 秒
+
+      admin:
+        enabled: true
+        name: "管理后台"
+        path: "/admin"
+        description: "系统管理"
+        require_auth: true
+
+    # 认证
+    authentication:
       enabled: true
-      type: "cli"
-      name: "命令行接口"
-      description: "命令行交互模式"
+      type: "basic"  # basic, oauth2
+      users:
+        - username: "admin"
+          password_hash: "hash_placeholder"  # 使用bcrypt
 
-      # 命令配置
-      commands:
-        - name: "chat"
-          description: "进入对话模式"
-          usage: "python cli.py chat"
+  # CLI 渠道
+  cli:
+    enabled: true
+    type: "cli"
+    name: "命令行接口"
+    description: "命令行交互模式"
 
-        - name: "eval"
-          description: "运行评估"
-          usage: "python cli.py eval --file eval.json"
+    # 命令配置
+    commands:
+      - name: "chat"
+        description: "进入对话模式"
+        usage: "python cli.py chat"
 
-        - name: "admin"
-          description: "管理命令"
-          usage: "python cli.py admin --action list_agents"
+      - name: "eval"
+        description: "运行评估"
+        usage: "python cli.py eval --file eval.json"
 
-      # 交互配置
-      interactive:
-        prompt: "Agent> "
-        history_file: "~/.agent_history"
-        max_history: 1000
-        color: true
+      - name: "admin"
+        description: "管理命令"
+        usage: "python cli.py admin --action list_agents"
+
+    # 交互配置
+    interactive:
+      prompt: "Agent> "
+      history_file: "~/.agent_history"
+      max_history: 1000
+      color: true
 
     # 将来可扩展的渠道
     # slack:

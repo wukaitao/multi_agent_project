@@ -33,7 +33,7 @@ class DomainRouter:
         Args:
             config_path: 配置文件路径
         """
-        self.config_path = config_path or Path(__file__).parent.parent / "config/agent_registry.yaml"
+        self.config_path = config_path or Path(__file__).parent.parent.parent / "config/agent_registry.yaml"
         self.agents_config = self._load_config()
         self.llm = LLMFactory.get_client("ollama")
 
