@@ -9,7 +9,7 @@ from datetime import datetime
 
 from core.graph_base import BaseGraph
 from core.state_base import BaseState
-from core.exceptions import ApprovalExpection
+from core.exceptions import ApprovalException
 from agents.specialized.approval_agent_new import ApprovalAgent
 import logging
 

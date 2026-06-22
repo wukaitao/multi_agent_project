@@ -1,4 +1,5 @@
 from core.agent_base import BaseAgent
+from langgraph.graph import StateGraph
 from typing import Dict, Any
 import uuid
 
@@ -8,6 +9,10 @@ class ApprovalAgent(BaseAgent):
     def __init__(self):
         super().__init__(name="approval_agent")
         self.pending_approvals = {}  # 内存存储, 胜场环境应使用 Redis/数据库
+
+    def build_graph(self) -> StateGraph:
+        """构建 ApprovalAgent 工作流"""
+        pass
 
     async def _execute(self, input_data: Dict) -> Dict:
         """处理审批请求"""

@@ -9,7 +9,7 @@ from datetime import datetime, timedelta
 
 from core.graph_base import BaseGraph
 from core.state_base import BaseState
-from core.exceptions import TimeoutExpection
+from core.exceptions import TimeoutException
 import logging
 
 logger = logging.getLogger(__name__)

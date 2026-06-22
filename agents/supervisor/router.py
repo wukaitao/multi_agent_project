@@ -11,7 +11,7 @@ from dataclasses import dataclass, field
 
 from llm.factory import LLMFactory
 from llm.embeddings import get_embedding
-from core.exceptions import RoutingExpection
+from core.exceptions import RoutingException
 import logging
 
 logger = logging.getLogger(__name__)
@@ -84,7 +84,7 @@ class DomainRouter:
             results = [r for r in results if r is not None]
 
             if not results:
-                raise RoutingExpection("No routing strategy matched")
+                raise RoutingException("No routing strategy matched")
             
             # 加载投票
             best_result = self._weighted_vote(results)
@@ -94,7 +94,7 @@ class DomainRouter:
             return best_result.agent_name
         except Exception as e:
             logger.error(f"Routing failed: {e}")
-            raise RoutingExpection(f"Failed to route query: {e}")
+            raise RoutingException(f"Failed to route query: {e}")
         
     async def _route_by_keyword(self, query: str) -> Optional[RoutingResult]:
         """

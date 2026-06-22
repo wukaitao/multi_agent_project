@@ -60,6 +60,26 @@
             },
             "console": "integratedTerminal",
             "justMyCode": false
+        },
+        {
+            "name": "1-new_Streamlit-Web前端 8501",
+            "type": "python",
+            "request": "launch",
+            "module": "streamlit",
+            "args": [
+                "run",
+                "channels/web/app_new.py",
+                "--server.port",
+                "8501",
+                "--server.address",
+                "0.0.0.0"
+            ],
+            "cwd": "${workspaceFolder}",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            },
+            "console": "integratedTerminal",
+            "justMyCode": false
         }
     ]
 }

@@ -3,6 +3,7 @@ from llama_index.core import VectorStoreIndex, Settings
 from llama_index.vector_stores.chroma import ChromaVectorStore
 from llama_index.embeddings.ollama import OllamaEmbedding
 from langgraph.graph import add_messages
+import chromadb
 from typing import TypedDict, List, Dict, Any
 from config.settings import *
 
@@ -28,8 +29,10 @@ class RAGSubgraph:
         # - 连接 Chroma (持久化)
         # - 支持多 collection (按领域分隔)
         # - 添加向量缓存机制
+        self.chroma_client = chromadb.PersistentClient(path=CHROMA_PATH)
+        self.chroma_collection = self.chroma_client.get_or_create_collection("ai_knowledage")
         self.vector_store = ChromaVectorStore(
-            persist_dir=str(MEMORY_PATH)
+            chroma_collection=self.chroma_collection
         )
 
     def build_graph(self) -> StateGraph:

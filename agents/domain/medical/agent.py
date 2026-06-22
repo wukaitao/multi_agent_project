@@ -6,7 +6,7 @@ class MedicalAgent(BaseAgent):
     """医疗领域专家 Agent"""
 
     def __init__(self):
-        super.__init__(name="medical_agent")
+        super().__init__(name="medical_agent")
         # TODO
         # - 加载医疗领域专属提示词
         # - 初始化医疗知识库(药品库|疾病库)

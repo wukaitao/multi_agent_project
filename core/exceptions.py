@@ -3,7 +3,7 @@
 """
 from typing import Optional, Dict, Any
 
-class AgentExpection(Exception):
+class AgentException(Exception):
     """Agent 基础异常类"""
     
     def __init__(
@@ -16,15 +16,15 @@ class AgentExpection(Exception):
         self.details = details or {}
         super().__init__(message)
 
-class GraphExpection(AgentExpection):
+class GraphException(AgentException):
     """工作流图异常"""
     pass
 
-class StateExpection(AgentExpection):
+class StateException(AgentException):
     """状态管理异常"""
     pass
 
-class ToolExpection(AgentExpection):
+class ToolException(AgentException):
     """工具调用异常"""
 
     def __init__(
@@ -38,7 +38,7 @@ class ToolExpection(AgentExpection):
         self.params = params or {}
         super().__init__(message, **kwargs)
 
-class LLMExpection(AgentExpection):
+class LLMException(AgentException):
     """LLM 调用异常"""
 
     def __init__(
@@ -52,11 +52,11 @@ class LLMExpection(AgentExpection):
         self.model = model
         super().__init__(message, **kwargs)
 
-class ValidationExpection(AgentExpection):
+class ValidationException(AgentException):
     """数据验证异常"""
     pass
 
-class TimeoutExpection(AgentExpection):
+class TimeoutException(AgentException):
     """超时异常"""
 
     def __init__(
@@ -68,7 +68,7 @@ class TimeoutExpection(AgentExpection):
         self.timeout_seconds = timeout_seconds
         super().__init__(message, **kwargs)
 
-class RetryExpection(AgentExpection):
+class RetryException(AgentException):
     """重试异常"""
 
     def __init__(
@@ -82,22 +82,22 @@ class RetryExpection(AgentExpection):
         self.max_attempts = max_attempts
         super().__init__(message, **kwargs)
 
-class ConfigurationExpection(AgentExpection):
+class ConfigurationException(AgentException):
     """配置异常"""
     pass
 
-class SecurityExpection(AgentExpection):
+class SecurityException(AgentException):
     """安全异常"""
     pass
 
-class ApprovalExpection(AgentExpection):
+class ApprovalException(AgentException):
     """审批流程异常"""
     pass
 
-class RoutingExpection(AgentExpection):
+class RoutingException(AgentException):
     """路由异常"""
     pass
 
-class MemoryExpection(AgentExpection):
+class MemoryException(AgentException):
     """记忆系统异常"""
     pass

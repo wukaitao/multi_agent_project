@@ -10,9 +10,9 @@ from langgraph.graph import StateGraph
 
 from core.agent_base import BaseAgent
 from core.state_base import BaseState, should_continue
-from core.exceptions import RoutingExpection
+from core.exceptions import GraphException
 from .router import DomainRouter
-from graphs.main_graph_new import MainGraph
+# from graphs.main_graph_new import MainGraph
 import logging
 
 logger = logging.getLogger(__name__)
@@ -20,6 +20,7 @@ logger = logging.getLogger(__name__)
 class SupervisorAgent(BaseAgent):
     """监督者 Agent - 主控和协调"""
     def __init__(self, config_path: Optional[str]=None):
+        from graphs.main_graph_new import MainGraph
         super().__init__(name="supervisor_agent")
 
         self.config_path = config_path or Path(__file__).parent / "workflows.yaml"
@@ -162,6 +163,11 @@ class SupervisorAgent(BaseAgent):
             "answer": combined_answer,
             "sub_results": results
         }
+    
+    def get_stats(self) -> Dict[str, Any]:
+        """获取工具统计信息"""
+        return {}
+    
     # TODO
     # - 实现任务优先级管理
     # - 添加任务列表
