@@ -1,0 +1,109 @@
+name: "订单处理工作流"
+version: "1.0.0"
+description: "自动订单处理流程"
+
+# 输入参数
+input_schema:
+  type: object
+  properties:
+    order_id:
+      type: string
+      description: "订单ID"
+    user_id:
+      type: string
+      description: "用户ID"
+    order_items:
+      type: array
+      description: "订单商品列表"
+    payment_method:
+      type: string
+      enum: ["credit_card", "wechat", "alipay", "bank_transfer"]
+    delivery_address:
+      type: object
+      properties:
+        address: {type: string}
+        city: {type: string}
+        phone: {type: string}
+  required:
+    - order_id
+    - user_id
+    - order_items
+
+# 工作流步骤
+steps:
+  - id: "step1_validate_order"
+    tool: "web_search"
+    description: "验证订单信息"
+    params:
+      query: "订单验证 ${context.order_id}"
+    on_error: "fail"
+
+  - id: "step2_check_inventory"
+    tool: "web_search"
+    description: "检查库存"
+    params:
+      query: "库存检查 ${context.order_items}"
+    depends_on: ["step1_validate_order"]
+    on_error: "fail"
+
+  - id: "step3_calculate_total"
+    tool: "calculator"
+    description: "计算总价"
+    params:
+      expression: "${context.order_items[0].price * context.order_items[0].quantity}"
+    depends_on: ["step2_check_inventory"]
+    on_error: "fail"
+
+  - id: "step4_process_payment"
+    tool: "web_search"
+    description: "处理支付"
+    params:
+      query: "支付处理 ${context.payment_method}"
+    depends_on: ["step3_calculate_total"]
+    on_error: "continue"
+
+  - id: "step5_update_inventory"
+    tool: "web_search"
+    description: "更新库存"
+    params:
+      query: "库存更新 ${context.order_items}"
+    depends_on: ["step4_process_payment"]
+    on_error: "continue"
+
+  - id: "step6_create_delivery"
+    tool: "web_search"
+    description: "创建配送单"
+    params:
+      query: "配送创建 ${context.delivery_address}"
+    depends_on: ["step5_update_inventory"]
+    on_error: "continue"
+
+  - id: "step7_send_notification"
+    tool: "web_search"
+    description: "发送通知"
+    params:
+      query: "订单通知 ${context.user_id}"
+    depends_on: ["step6_create_delivery"]
+    on_error: "continue"
+
+# 输出配置
+output:
+  - name: "order_status"
+    source: "step1_validate_order.result"
+  - name: "total_amount"
+    source: "step3_calculate_total.result"
+  - name: "payment_status"
+    source: "step4_process_payment.result"
+  - name: "delivery_tracking"
+    source: "step6_create_delivery.result"
+  - name: "notification_sent"
+    source: "step7_send_notification.result"
+
+# 错误处理
+error_handling:
+  default_strategy: "continue"
+  retry_count: 2
+  retry_delay: 3
+
+# 超时配置
+timeout: 300  # 5分钟

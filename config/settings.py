@@ -38,6 +38,8 @@ NEO4J_USER=os.getenv("NEO4J_USER", "neo4j")
 NEO4J_PASSWORD=os.getenv("NEO4J_PASSWORD", "")
 # 向量数据库(ChromaDB + SQLite3)
 CHROMA_PATH=os.getenv("CHROMA_PATH", "./data/chroma")
+# Redis 存储
+REDIS_URL=""
 # 安全配置
 SECRET_TOKEN=os.getenv("SECRET_TOKEN", "admin2026ai")
 MAX_REQUEST_PER_MINUTE = 20

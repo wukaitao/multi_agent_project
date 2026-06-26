@@ -1,0 +1,71 @@
+name: "金融风险评估"
+version: "1.0.0"
+description: "自动化金融风险苹果工作流"
+
+# 输入参考
+input_schema:
+  type: object
+  properties:
+    portfolio:
+      type: array
+      description: "投资组合数据"
+    time_horizon:
+      type: string
+      enum: ["short", "medium", "long"]
+      default: "medium"
+    required:
+      - portfolio
+
+# 工作流步骤
+steps:
+  - id: "step1_query_stock"
+    too: "stock_query"
+    description: "查询股票行情"
+    params:
+      symbol: "${context.stock_symbol}"
+      period: "id"
+    on_error: "fail"
+
+  - id: "step2_financial_analysis"
+    tool: "financial_analysis"
+    description: "财务指标分析"
+    params:
+      company: "${context.compay}"
+      metrics: ["pe", "pb", "roe"]
+    depends_on: ["step1_query_stock"]
+    on_error: "continue"
+
+  - id: "step3_risk_assessment"
+    tool: "risk_assessment"
+    description: "风险评估"
+    params:
+      portfolio: "${context.portfolio}"
+      time_horizon: "${context.time_horizon}"
+    depends_on: ["step1_query_stock", "step2_financial_analysis"]
+    on_error: "fail"
+
+  - id: "step4_genertate_report"
+    tool: "web_search"
+    description: "生成风险评估报告"
+    params:
+      query: "风险评估报告 ${context.company}"
+      mnum_results: 3
+    depends_on: ["step3_risk_assessment"]
+    on_error: "continue"
+
+# 输出配置
+output:
+  - name: "risk_store"
+    source: "step3_risk_assessment.result.risk_score"
+  - name: "risk_level"
+    source: "step3_risk_assessment.result.risk_level"
+  - name: "recommendations"
+    source: "step3_risk_assessment.result.recommendations"
+  - name: "report"
+    source: "step4_generate_report.result"
+
+# 错误处理
+error_handling:
+  default_strategy: "fail"
+  retry_count: 3
+  retry_delay: 5
