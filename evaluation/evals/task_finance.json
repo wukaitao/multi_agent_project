@@ -1,0 +1,125 @@
+{
+    "name": "金融领域评估集",
+    "version": "1.0.0",
+    "decription": "金融领域 Agent 的评估任务集",
+    "created_at": "2026-01-01T00:00:00",
+    "author": "AI Agent Team",
+    "tasks": [
+        {
+            "id": "fin_001",
+            "task_name": "股票行情查询",
+            "query": "查询苹果捅死(AAPL)今天的股票行情",
+            "expected": "返回AAPL股票的当前价格、涨跌幅、成交量等信息",
+            "domain": "finance",
+            "contetxt": {
+                "symbol": "AAPL",
+                "period": "1d"
+            },
+            "metadata": {
+                "difficulty": "easy",
+                "category": "stock_query",
+                "timeout": 10,
+                "required_tools": ["stock_query"]
+            }
+        },
+        {
+            "id": "fin_002",
+            "task_name": "财务指标分析",
+            "query": "分析腾讯公司的市盈率、市净率和ROE",
+            "expected": "返回腾讯公司的PE、PE、ROE指标值及简要分析",
+            "domain": "finance",
+            "contetxt": {
+                "company": "腾讯",
+                "metrics": ["pe", "pb", "roe"]
+            },
+            "metadata": {
+                "difficulty": "medium",
+                "category": "financial_analysis",
+                "timeout": 10,
+                "required_tools": ["financial_analysis"]
+            }
+        },
+        {
+            "id": "fin_003",
+            "task_name": "投资风险评估",
+            "query": "评估包含股票A(30%)、股票B(30%)、债券(40%)的投资组合风险",
+            "expected": "返回风险评估分数、风险等级和投资建议",
+            "domain": "finance",
+            "contetxt": {
+                "portfolio": [
+                    {"symbol": "A", "weight": 0.3},
+                    {"symbol": "B", "weight": 0.3},
+                    {"symbol": "BOND", "weight": 0.4}
+                ],
+                "time_horizon": "long"
+            },
+            "metadata": {
+                "difficulty": "hard",
+                "category": "risk_assessment",
+                "timeout": 10,
+                "required_tools": ["risk_assessment"]
+            }
+        },
+        {
+            "id": "fin_004",
+            "task_name": "多股票对比",
+            "query": "对比阿里巴巴、京东、拼多多三只股票的近期表现",
+            "expected": "返回三只股票的价格、涨跌幅、成交量对比",
+            "domain": "finance",
+            "contetxt": {
+                "symbol": ["BABA", "JD", "PDD"],
+                "period": "1m"
+            },
+            "metadata": {
+                "difficulty": "medium",
+                "category": "stock_comparison",
+                "timeout": 10,
+                "required_tools": ["stock_query"]
+            }
+        },
+        {
+            "id": "fin_005",
+            "task_name": "投资组合构建建议",
+            "query": "建议一个合适保守型投资者的投资组合",
+            "expected": "返回包含股票、债券、现金等配置的建议",
+            "domain": "finance",
+            "contetxt": {
+                "risk_tolerance": "consverative",
+                "investment_amount": 100000,
+                "time_horizon": "5年"
+            },
+            "metadata": {
+                "difficulty": "hard",
+                "category": "portfolio_construction",
+                "timeout": 10,
+                "required_tools": ["risk_assessment", "financial_analysis"]
+            }
+        },
+        {
+            "id": "fin_006",
+            "task_name": "宏观经济影响分析",
+            "query": "分析美联储加息对中国故事的影响",
+            "expected": "返回加息对A股市场的影响分析和投资建议",
+            "domain": "finance",
+            "contetxt": {
+                "event": "美联储加息",
+                "market": "A股"
+            },
+            "metadata": {
+                "difficulty": "hard",
+                "category": "macro_analysis",
+                "timeout": 10,
+                "required_tools": ["web_search", "financial_analysis"]
+            }
+        }
+    ],
+
+    "evaluation_config": {
+        "default_timeout": 30,
+        "max-retries": 3,
+        "required_score": 0.7,
+        "graders": ["llm", "exact_match"],
+        "parallel_execution": true,
+        "max_concurrent": 5
+    }
+}
